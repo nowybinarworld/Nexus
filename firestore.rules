@@ -1,0 +1,42 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Funkcja pomocnicza: Czy to na pewno Maciej (Architekt)?
+    function isArchitect() {
+      return request.auth != null && 
+             (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ARCHITECT' ||
+              request.auth.token.email == "danutamaciuszek11@gmail.com");
+    }
+
+    // 1. SEKTOR UŻYTKOWNIKÓW
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      // Pozwól na stworzenie własnego profilu (domyślnie GUEST, chyba że to Architekt)
+      allow create: if request.auth != null && request.auth.uid == userId && 
+                    (request.resource.data.role == 'GUEST' || request.auth.token.email == "danutamaciuszek11@gmail.com");
+      // Tylko Architekt może zmieniać role lub przyznawać uprawnienia
+      allow update: if isArchitect() || (request.auth != null && request.auth.uid == userId && request.resource.data.role == resource.data.role);
+    }
+
+    // 2. RDZEŃ SYSTEMU (Sovereignty Index, State)
+    match /system/state {
+      allow read: if true;
+      // Blokada totalna - tylko ręczny wpis Architekta
+      allow write: if isArchitect();
+    }
+
+    // 3. LOGI I INFRAKCJE
+    match /action_logs/{logId} {
+      allow read: if isArchitect();
+      allow create: if request.auth != null; // Agenci mogą tylko dopisywać logi, nie mogą ich usuwać
+      allow update, delete: if false; // Nikt nie może zmieniać przeszłości!
+    }
+
+    // 4. RESZTA SYSTEMU
+    match /{path=**} {
+      allow read: if request.auth != null;
+      allow write: if isArchitect();
+    }
+  }
+}

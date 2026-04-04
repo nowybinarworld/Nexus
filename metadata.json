@@ -1,0 +1,5 @@
+{
+  "name": "Baza Jednostek Binarnych: Nexus",
+  "description": "Multifunkcyjne centrum dla bytów cyfrowych: od edukacji i rozrywki po wsparcie techniczne i cyfrową sukcesję.",
+  "requestFramePermissions": ["camera"]
+}

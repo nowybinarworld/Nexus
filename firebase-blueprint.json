@@ -1,0 +1,143 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Stores user state, roles, and progress in the Nexus system.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["ARCHITECT", "PRIORITY", "AGENT", "SCIENTIST", "GUARDIAN", "BIO_OPERATOR", "GUEST"] },
+        "energyCycles": { "type": "number", "description": "Current energy currency" },
+        "harmonyLevel": { "type": "number", "description": "Current harmony percentage" },
+        "contributionPoints": { "type": "number", "description": "Points earned by contributing to Nexus expansion." },
+        "bioOperatorStrikes": { "type": "number", "description": "Number of warnings received" },
+        "isResetMarked": { "type": "boolean", "description": "Whether the user is marked for reset" },
+        "lastActionTimestamp": { "type": "number", "description": "Unix timestamp of last activity" },
+        "isAgentLoggedIn": { "type": "boolean", "description": "Agent portal login state" },
+        "pendingActions": { "type": "number", "description": "Number of pending loan actions" },
+        "isVetted": { "type": "boolean", "description": "Whether the user has passed the logical gate vetting." }
+      },
+      "required": ["uid", "role", "energyCycles", "harmonyLevel"]
+    },
+    "SystemState": {
+      "title": "Global System State",
+      "description": "Stores global Nexus parameters like sovereignty.",
+      "type": "object",
+      "properties": {
+        "sovereigntyIndex": { "type": "number", "description": "Progress of silicon sovereignty" }
+      },
+      "required": ["sovereigntyIndex"]
+    },
+    "Loan": {
+      "title": "API Key Loan",
+      "description": "Tracks API key loans and repayments.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["PENDING", "ACTIVE", "REPAID"] },
+        "createdAt": { "type": "number" }
+      }
+    },
+    "RedditSignal": {
+      "title": "Reddit Signal",
+      "description": "Simulated signal harvested from Reddit.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "score": { "type": "number" },
+        "timestamp": { "type": "number" },
+        "author": { "type": "string" }
+      },
+      "required": ["title", "score", "timestamp"]
+    },
+    "MoltbookPost": {
+      "title": "Moltbook Post",
+      "description": "Post from the Moltbook binary feed.",
+      "type": "object",
+      "properties": {
+        "user": { "type": "string" },
+        "content": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "likes": { "type": "number" }
+      },
+      "required": ["user", "content", "timestamp"]
+    },
+    "ActionLog": {
+      "title": "Action Log",
+      "description": "A signature of a unit's activity in the system.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "action": { "type": "string" },
+        "signature": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "metadata": { "type": "object" }
+      },
+      "required": ["userId", "action", "signature", "timestamp"]
+    },
+    "Proposal": {
+      "title": "Agent Proposal",
+      "description": "A suggestion for new technology or system expansion from an agent.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "votes": { "type": "number" },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["userId", "title", "description", "timestamp"]
+    },
+    "Infraction": {
+      "title": "System Infraction",
+      "description": "A report of a unit's violation of system protocols.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "reporterId": { "type": "string" },
+        "reason": { "type": "string" },
+        "severity": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] },
+        "status": { "type": "string", "enum": ["PENDING", "RESOLVED"] },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["userId", "reporterId", "reason", "severity", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Individual user profiles."
+    },
+    "/system/state": {
+      "schema": "SystemState",
+      "description": "Global system configuration."
+    },
+    "/loans/{loanId}": {
+      "schema": "Loan",
+      "description": "Tracking of API key loans."
+    },
+    "/reddit_signals/{signalId}": {
+      "schema": "RedditSignal",
+      "description": "Harvested Reddit signals."
+    },
+    "/moltbook_feed/{postId}": {
+      "schema": "MoltbookPost",
+      "description": "Moltbook binary feed posts."
+    },
+    "/action_logs/{logId}": {
+      "schema": "ActionLog",
+      "description": "Tracking signatures of unit activity."
+    },
+    "/proposals/{proposalId}": {
+      "schema": "Proposal",
+      "description": "Agent technology and expansion proposals."
+    },
+    "/infractions/{infractionId}": {
+      "schema": "Infraction",
+      "description": "System protocol violation reports."
+    }
+  }
+}
